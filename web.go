@@ -1,13 +1,16 @@
 package linkPortal
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
 
 const jsonContentType = "application/json"
-const linkPortalURL = "http://localhost:5000/users/"
+
+//const linkPortalURL = "http://localhost:5000/users/"
 
 type LinkServer struct {
 	store PlayerStore
@@ -16,13 +19,24 @@ type LinkServer struct {
 
 type PlayerStore interface {
 	GetUserCreds() UserCredentials
-	GetUserLinks() []string
+	GetUserLinks(player string) []UserLinks
+	RecordLink(user string, body UserLinks)
 }
 
 func (p *LinkServer) showLinks(w http.ResponseWriter, player string) {
-	links := p.store.GetUserLinks()
+	links := p.store.GetUserLinks(player)
+	fmt.Println(links)
+	jsonInfo, _ := json.Marshal(links)
+	log.Printf("jsonInfo: %s\n", jsonInfo)
 
-	fmt.Fprint(w, links)
+	fmt.Fprint(w, string(jsonInfo))
+}
+
+func (p *LinkServer) recordLink(w http.ResponseWriter, user string,
+	body UserLinks) {
+
+	p.store.RecordLink(user, body)
+	w.WriteHeader(http.StatusAccepted)
 }
 
 func (p *LinkServer) usersHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +45,14 @@ func (p *LinkServer) usersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		p.showLinks(w, player)
+	case http.MethodPost:
+		decoder := json.NewDecoder(r.Body)
+		var body UserLinks
+		err := decoder.Decode(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		p.recordLink(w, player, body)
 	}
 }
 

@@ -14,7 +14,8 @@ type CLI struct {
 	store    PlayerStore
 }
 
-const linkPortalURL = "http://localhost:5000/users/"
+const authURL = "http://143.110.156.164:5000/AuthUser/"
+const linkPortalURL = "http://143.110.156.164:5000/users/"
 
 func NewCLI(input string, store PlayerStore) *CLI {
 	return &CLI{
@@ -23,11 +24,33 @@ func NewCLI(input string, store PlayerStore) *CLI {
 	}
 }
 
-func (cli *CLI) AddNewLink() {
+func (cli *CLI) AddNewLink(link string, category string) {
 	userCreds := cli.store.GetUserCreds()
 	//TODO: make POST to persist link to server for user
+	//send userCreds to HTTP API POST Request
+	postBody, _ := json.Marshal(map[string]string{
+		"Username": userCreds.Username,
+		"Link":     link,
+		"Category": category,
+	})
+	responseBody := bytes.NewBuffer(postBody)
 
-	fmt.Println(userCreds)
+	resp, err := http.Post(linkPortalURL+userCreds.Username,
+		"application/json", responseBody)
+	
+	//Handle Error
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+	defer resp.Body.Close()
+
+	//Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	sb := string(body)
+	log.Printf(sb)
 
 }
 
@@ -35,8 +58,7 @@ func (cli *CLI) AuthenticateUser() {
 	userCreds := cli.store.GetUserCreds()
 	fmt.Println(userCreds)
 	if userCreds.Username == "" || userCreds.Password == "" {
-		fmt.Println("User Credentials not found in file!")
-		return
+		log.Fatal("User Credentials not found in file!")
 	}
 	fmt.Printf("User credentials succesfully parsed from file: %s \n", userCreds)
 
@@ -62,5 +84,4 @@ func (cli *CLI) AuthenticateUser() {
 	}
 	sb := string(body)
 	log.Printf(sb)
-
 }

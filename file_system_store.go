@@ -55,13 +55,11 @@ func (f *FileSystemUserStore) GetUserCreds() UserCredentials {
 	return f.userCreds
 }
 
-func (f *FileSystemUserStore) GetUserLinks() []string {
-	// this method should retrieve users links 
-	// based on user/password combination
-	// from webserver
-	var links []string
+func (f *FileSystemUserStore) RecordLink(user string, body UserLinks)  {
 
-	//TODO: make webserver GET request to get links for user
+}
 
+func (f *FileSystemUserStore) GetUserLinks(player string) []UserLinks {
+	var links []UserLinks
 	return links
 }

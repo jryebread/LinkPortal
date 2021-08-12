@@ -14,8 +14,8 @@ type CLI struct {
 	store    PlayerStore
 }
 
-const authURL = "http://143.110.156.164:5000/AuthUser/"
-const linkPortalURL = "http://143.110.156.164:5000/users/"
+//const authURL = "http://143.110.156.164:5000/AuthUser/"
+const linkPortalURL = "https://143.110.156.164:5000/users/"
 
 func NewCLI(input string, store PlayerStore) *CLI {
 	return &CLI{

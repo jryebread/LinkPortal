@@ -12,7 +12,7 @@ import (
 )
 
 const dbFileName = "user_auth.json"
-const linkPortalURL = "http://143.110.156.164:5000/users/"
+const linkPortalURL = "https://143.110.156.164:5000/users/"
 
 func transformJsonToUserLinks(username string, target interface{}) error {
 	resp, err := http.Get(linkPortalURL + username)

@@ -39,8 +39,14 @@ func (p *LinkServer) recordLink(w http.ResponseWriter, user string,
 	w.WriteHeader(http.StatusAccepted)
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 func (p *LinkServer) usersHandler(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/users/")
+	//enable cors
+	enableCors(&w)
 
 	switch r.Method {
 	case http.MethodGet:

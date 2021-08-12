@@ -57,6 +57,8 @@ func main() {
 	//cli.AuthenticateUser()
 	catPtr := flag.String("category", "default", "category the link falls under")
     linkPtr := flag.String("link", "", "link to be uploaded to the portal")
+	
+	
 	flag.Parse()
 
 	link := *linkPtr
